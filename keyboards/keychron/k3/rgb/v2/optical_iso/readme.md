@@ -1,4 +1,4 @@
-# Keychron K2V2 RGB ISO
+# Keychron K3V2 RGB Optical ISO
 
 
 *A 75% keyboard sold by keychron*
