@@ -15,4 +15,3 @@
  */
 
 #define RGB_MATRIX_LED_COUNT 85
-#define RGB_MATRIX_SLEEP
