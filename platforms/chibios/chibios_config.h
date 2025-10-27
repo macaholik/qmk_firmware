@@ -15,6 +15,8 @@
  */
 #pragma once
 
+#include "compiler_support.h"
+
 #ifndef USB_VBUS_PIN
 #    define SPLIT_USB_DETECT // Force this on when dedicated pin is not used
 #endif
@@ -26,7 +28,7 @@
 #    define REALTIME_COUNTER_CLOCK 1000000
 
 #    define USE_GPIOV1
-#    define PAL_OUTPUT_TYPE_OPENDRAIN _Static_assert(0, "RP2040 has no Open Drain GPIO configuration, setting this is not possible");
+#    define PAL_OUTPUT_TYPE_OPENDRAIN STATIC_ASSERT(0, "RP2040 has no Open Drain GPIO configuration, setting this is not possible");
 
 /* Aliases for GPIO PWM channels - every pin has at least one PWM channel
  * assigned */
@@ -142,6 +144,19 @@
 #    endif
 #endif
 
+// AT32 compatibility
+#if defined(MCU_AT32)
+#    define CPU_CLOCK AT32_SYSCLK
+
+#    if defined(AT32F415)
+#        define USE_GPIOV1
+#        define USE_I2CV1
+#        define PAL_MODE_ALTERNATE_OPENDRAIN PAL_MODE_AT32_MUX_OPENDRAIN
+#        define PAL_MODE_ALTERNATE_PUSHPULL PAL_MODE_AT32_MUX_PUSHPULL
+#        define AUDIO_PWM_PAL_MODE PAL_MODE_ALTERNATE_PUSHPULL
+#    endif
+#endif
+
 #if defined(GD32VF103)
 /* This chip has the same API as STM32F103, but uses different names for literally the same thing.
  * As of 4.7.2021 QMK is tailored to use STM32 defines/names, for compatibility sake
@@ -177,6 +192,13 @@
 #    define REALTIME_COUNTER_CLOCK CPU_CLOCK
 #endif
 
+#if defined(MCU_SN32)
+#    define CPU_CLOCK SN32_HCLK
+#    define SPI_SCK_FLAGS PAL_MODE_OUTPUT_PUSHPULL
+#    define SPI_MOSI_FLAGS PAL_MODE_OUTPUT_PUSHPULL
+#    define SPI_MISO_FLAGS PAL_MODE_OUTPUT_PUSHPULL
+#endif
+
 // SPI Fallbacks
 #ifndef SPI_SCK_FLAGS
 #    define SPI_SCK_FLAGS PAL_MODE_ALTERNATE(SPI_SCK_PAL_MODE) | PAL_OUTPUT_TYPE_PUSHPULL | PAL_OUTPUT_SPEED_HIGHEST
@@ -188,8 +210,4 @@
 
 #ifndef SPI_MISO_FLAGS
 #    define SPI_MISO_FLAGS PAL_MODE_ALTERNATE(SPI_MISO_PAL_MODE) | PAL_OUTPUT_TYPE_PUSHPULL | PAL_OUTPUT_SPEED_HIGHEST
-#endif
-
-#if defined(SN32F2)
-#    define CPU_CLOCK SN32_HCLK
 #endif
